@@ -11,6 +11,6 @@ def other_page(request, page):
         template = get_template('main/' + page + '.html')
     except TemplateDoesNotExist:
         raise Http404
-    return HttpResponse(template.render(request))
+    return HttpResponse(template.render(request=request))
 
 # Create your views here.
