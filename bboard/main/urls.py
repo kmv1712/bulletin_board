@@ -7,6 +7,8 @@ from .views import BBLogoutView
 from .views import profile
 from .views import ChangeUserInfoView
 from .views import BBPasswordChangeView
+from .views import RegisterUserView, RegisterDoneView
+from .views import user_activate
 
 app_name = 'main'
 urlpatterns = [
@@ -14,6 +16,9 @@ urlpatterns = [
         path('accounts/profile/change/', ChangeUserInfoView.as_view(), name='profile_change'),
         path('accounts/logout/', BBLogoutView.as_view(), name='logout'),
         path('accounts/profile/', profile, name='profile'),
+        path('accounts/register/activate/<str:sign>/', user_activate, name='register_activate'),
+        path('accounts/register/done/', RegisterDoneView.as_view(), name='register_done'),
+        path('accounts/register/', RegisterUserView.as_view(), name='register'),
         path('accouns/login/', BBLoginView.as_view(), name='login'),
         path('<str:page>/', other_page, name='other'),
         path('', index, name='index'),
