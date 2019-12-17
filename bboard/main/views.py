@@ -2,13 +2,16 @@ from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, Http404
 from django.template import TemplateDoesNotExist
 from django.template.loader import get_template
+from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib.auth.views import LoginView, LogoutView, PasswordChangeView
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth import logout
+from django.contrib import messages
 from django.urls import reverse_lazy
-from django.contrib.messages.views import SuccessMessageMixin
 from django.views.generic.edit import UpdateView
 from django.views.generic.edit import CreateView
+from django.views.generic.edit import DeleteView
 from django.views.generic.base import TemplateView
 from django.core.signing import BadSignature
 
@@ -16,6 +19,26 @@ from .models import AdvUser
 from .forms import ChangeUserInfoForm
 from .forms import RegisterUserForm
 from .utilities import signer
+
+class DeleteUserView(LoginRequiredMixin, DeleteView):
+    model = AdvUser
+    template_name = 'main/delete_user.html'
+    success_url = reverse_lazy('main:index')
+    
+    def dispatch(self, request, *args, **kwargs):
+        self.user_id = request.user.pk
+        return super().dispatch(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        logout(request)
+        messages.add_message(request, messages.SUCCESS, 'Пользователь удален')
+        return super().post(request, *args, **kwargs)
+
+    def get_object(self, queryset=None):
+        if not queryset:
+            queryset = self.get_queryset()
+        return get_object_or_404(queryset, pk=self.user_id)
+
 
 def user_activate(request, sign):
     try:
