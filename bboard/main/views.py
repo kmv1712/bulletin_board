@@ -14,7 +14,7 @@ from django.views.generic.edit import CreateView
 from django.views.generic.edit import DeleteView
 from django.views.generic.base import TemplateView
 from django.core.signing import BadSignature
-from django.core.paginator import Pagintor
+from django.core.paginator import Paginator
 from django.db.models import Q
 
 from .models import SubRubric, Bb
@@ -129,6 +129,8 @@ def other_page(request, page):
         raise Http404
     return HttpResponse(template.render(request=request))
 
-# Create your views here.
-
-
+def detail(request, rubric_pk, pk):
+    bb = get_object_or_404(Bb, pk=pk)
+    ais = bb.additionalimage_set.all()
+    context = {'bb':bb, 'ais': ais}
+    return render(request, 'main/detail.html', context)

@@ -11,6 +11,7 @@ from .views import RegisterUserView, RegisterDoneView
 from .views import user_activate
 from .views import DeleteUserView
 from .views import by_rubric
+from .views import detail
 from django.conf.urls.static import static
 from django.conf import settings
 
@@ -25,6 +26,7 @@ urlpatterns = [
         path('accounts/profile/delete/', DeleteUserView.as_view(), name='profile_delete'),
         path('accounts/profile/change/', ChangeUserInfoView.as_view(), name='profile_change'),
         path('accounts/profile/', profile, name='profile'),
+        path('<int:rubric_pk>/<int:pk>/', detail, name='detail'),
         path('<int:pk>/', by_rubric, name='by_rubric'),
         path('<str:page>/', other_page, name='other'),
         path('', index, name='index'),
