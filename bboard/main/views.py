@@ -120,7 +120,10 @@ class BBLoginView(LoginView):
     template_name = 'main/login.html'
 
 def index(request):
-    return render(request, 'main/index.html')
+    """Контроллер, который выводит главную страницу с последними 10 объявлениями"""
+    bbs = Bb.objects.filter(is_active=True)[:10]
+    context = {'bbs': bbs}
+    return render(request, 'main/index.html', context)
 
 def other_page(request, page):
     try:
