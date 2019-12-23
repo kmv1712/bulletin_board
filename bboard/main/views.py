@@ -166,4 +166,20 @@ def profile_bb_add(request):
         return render(request, 'main/profile_bb_add.html', context)
 
 
+@login_required
+def profile_bb_add(request):
+    if request.method == 'POST':
+        form = BbForm(request.POST, request.FILES)
+        if form.is_valid():
+            bb = form.save()
+            formset = AIFormSet(request.POST, request.FILES, instance=bb)
+            if formset.is_valid():
+                formset.save()
+                messages.add_message(request, messages.SUCCESS, 'Объявление добавлено')
+                return redirect('main:profile')
+    else:
+        form = BbForm(initial={'author': request.user.pk})
+        formset = AIFormSet()
+    context = {'form': form, 'formset': formset}
+    return render(request, 'main/profile_bb_add.html', context)
 

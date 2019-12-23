@@ -13,6 +13,8 @@ from .views import DeleteUserView
 from .views import by_rubric
 from .views import detail
 from .views import profile_bb_detail
+from .views import profile_bb_add
+
 from django.conf.urls.static import static
 from django.conf import settings
 
@@ -26,6 +28,7 @@ urlpatterns = [
         path('accounts/login/', BBLoginView.as_view(), name='login'),
         path('accounts/profile/delete/', DeleteUserView.as_view(), name='profile_delete'),
         path('accounts/profile/change/', ChangeUserInfoView.as_view(), name='profile_change'),
+        path('accounts/profile/add/', profile_bb_add, name='profile_bb_add'),
         path('accounts/profile/<int:pk>/', profile_bb_detail, name='profile_bb_detail'),
         path('accounts/profile/', profile, name='profile'),
         path('<int:rubric_pk>/<int:pk>/', detail, name='detail'),
