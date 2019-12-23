@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse, Http404
 from django.template import TemplateDoesNotExist
 from django.template.loader import get_template
@@ -22,6 +22,7 @@ from .models import AdvUser
 from .forms import SearchForm
 from .forms import ChangeUserInfoForm
 from .forms import RegisterUserForm
+from .forms import BbForm, AIFormSet
 from .utilities import signer
 
 def by_rubric(request, pk):
@@ -147,7 +148,22 @@ def profile_bb_detail(request, rubric_pk, pk):
     context = {'bb':bb, 'ais': ais}
     return render(request, 'main/detail_for_user.html', context)
 
-
+@login_required
+def profile_bb_add(request):
+    if request.method == 'POST':
+        form = BbForm(request.POST, request.FILES)
+        if form.is_valid():
+            bb = form.save()
+            formset = AIFormSet(request.POST, request.FILES, instance=bb)
+            if formset.is_valid():
+                formset.save()
+                message.add_message(request, messages.SUCCESS, 'Объявление добавлено')
+                return redirect('main:profile')
+        else:
+            form = BbForm(initial={'author': request.user.pk})
+            formset = AIFormSet()
+        context = {'form': form, 'formset': formset}
+        return render(request, 'main/profile_bb_add.html', context)
 
 
 
