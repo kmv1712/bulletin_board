@@ -5,8 +5,10 @@ from django.forms import inlineformset_factory
 
 from .models import AdvUser, user_registrated, SuperRubric, SubRubric, Bb, AdditionalImage
 
+
 class SearchForm(forms.Form):
     keyword = forms.CharField(required=False, max_length=20, label='')
+
 
 class SubRubricForm(forms.ModelForm):
 
@@ -15,6 +17,7 @@ class SubRubricForm(forms.ModelForm):
     class Meta:
         model = SubRubric
         fields = '__all__'
+
 
 class ChangeUserInfoForm(forms.ModelForm):
     email = forms.EmailField(required=True, label='Адрес электронной почты')
@@ -56,10 +59,12 @@ class RegisterUserForm(forms.ModelForm):
         model = AdvUser
         fields = ('username', 'email', 'password1', 'password2', 'first_name', 'last_name', 'send_messages')
 
+
 class BbForm(forms.ModelForm):
     class Meta:
         model = Bb
         fields = '__all__'
         widgets = {'author': forms.HiddenInput}
 
-AIFormSet = inlineformset_factory(Bb, AdditionalImage, fields='_all_')
+
+AIFormSet = inlineformset_factory(Bb, AdditionalImage, fields='__all__')

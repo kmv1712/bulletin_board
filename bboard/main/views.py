@@ -25,6 +25,7 @@ from .forms import RegisterUserForm
 from .forms import BbForm, AIFormSet
 from .utilities import signer
 
+
 def by_rubric(request, pk):
     rubric = get_object_or_404(SubRubric, pk=pk)
     bbs = Bb.objects.filter(is_active=True, rubric=pk)
@@ -80,19 +81,23 @@ def user_activate(request, sign):
         user.save()
     return render(request, template)
 
+
 class RegisterUserView(CreateView):
     model = AdvUser
     template_name = 'main/register_user.html'
     form_class = RegisterUserForm
     success_url = reverse_lazy('main:register_done')
 
+
 class RegisterDoneView(TemplateView):
     template_name = 'maim/register_done.html'
+
 
 class BBPasswordChangeView(SuccessMessageMixin, LoginRequiredMixin, PasswordChangeView):
     template_name = 'main/password_change.html'
     success_url = reverse_lazy('main:profile')
     success_message = 'Пароль пользователя изменен'
+
 
 class ChangeUserInfoView(SuccessMessageMixin, LoginRequiredMixin, UpdateView):
     model = AdvUser
@@ -110,8 +115,10 @@ class ChangeUserInfoView(SuccessMessageMixin, LoginRequiredMixin, UpdateView):
             queryset = self.get_queryset()
         return get_object_or_404(queryset, pk=self.user_id)
 
+
 class BBLogoutView(LoginRequiredMixin, LogoutView):
     template_name = 'main/logout.html'
+
 
 @login_required
 def profile(request):
@@ -119,14 +126,17 @@ def profile(request):
     context = {'bbs': bbs}
     return render(request, 'main/profile.html', context)
 
+
 class BBLoginView(LoginView):
     template_name = 'main/login.html'
+
 
 def index(request):
     """Контроллер, который выводит главную страницу с последними 10 объявлениями"""
     bbs = Bb.objects.filter(is_active=True)[:10]
     context = {'bbs': bbs}
     return render(request, 'main/index.html', context)
+
 
 def other_page(request, page):
     try:
@@ -135,11 +145,13 @@ def other_page(request, page):
         raise Http404
     return HttpResponse(template.render(request=request))
 
+
 def detail(request, rubric_pk, pk):
     bb = get_object_or_404(Bb, pk=pk)
     ais = bb.additionalimage_set.all()
     context = {'bb':bb, 'ais': ais}
     return render(request, 'main/detail.html', context)
+
 
 @login_required
 def profile_bb_detail(request, rubric_pk, pk):
@@ -147,6 +159,7 @@ def profile_bb_detail(request, rubric_pk, pk):
     ais = bb.additionalimage_set.all()
     context = {'bb':bb, 'ais': ais}
     return render(request, 'main/detail_for_user.html', context)
+
 
 @login_required
 def profile_bb_add(request):
@@ -157,7 +170,7 @@ def profile_bb_add(request):
             formset = AIFormSet(request.POST, request.FILES, instance=bb)
             if formset.is_valid():
                 formset.save()
-                message.add_message(request, messages.SUCCESS, 'Объявление добавлено')
+                messages.add_message(request, messages.SUCCESS, 'Объявление добавлено')
                 return redirect('main:profile')
         else:
             form = BbForm(initial={'author': request.user.pk})
@@ -182,4 +195,37 @@ def profile_bb_add(request):
         formset = AIFormSet()
     context = {'form': form, 'formset': formset}
     return render(request, 'main/profile_bb_add.html', context)
+
+
+@login_required
+def profile_bb_change(request, pk):
+    """Контроллер для изменения объявления"""
+    bb = get_object_or_404(Bb, pk=pk)
+    if request.method == 'POST':
+        form = BbForm(request.POST. request.FILES, instance=bb)
+        if form.is_valid():
+            bb = form.save()
+            formset = AIFormSet(request.POST, request.FILES, instance=bb)
+            if formset.is_valid():
+                formset.save()
+                messages.add_message(request, messages.SUCCESS, 'Объявление исправлено')
+                return redirect('main:profile')
+    else:
+        form = BbForm(instance=bb)
+        formset = AIFormSet(instance=bb)
+    context = {'form': form, 'formset': formset}
+    return render(request, 'main/profile_bb_change.html', context)
+
+
+@login_required
+def profile_bb_delete(request, pk):
+    """Контроллер для удаления объявления"""
+    bb = get_object_or_404(Bb, pk=pk)
+    if request.method == 'POST':
+        bb.delete()
+        messages.add_message(request, messages.SUCCESS, 'Объявление удалено')
+        return redirect('main:profile')
+    else:
+        context = {'bb': bb}
+        return render(request, 'main:profile_bb_delete.html', context)
 
