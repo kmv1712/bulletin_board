@@ -3,3 +3,5 @@ __pycache__/
 bboard.data
 bboard/media
 env/
+.idea
+

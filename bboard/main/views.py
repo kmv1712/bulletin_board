@@ -146,7 +146,7 @@ def other_page(request, page):
     return HttpResponse(template.render(request=request))
 
 
-def detail(request, rubric_pk, pk):
+def detail(request, pk):
     bb = get_object_or_404(Bb, pk=pk)
     ais = bb.additionalimage_set.all()
     context = {'bb':bb, 'ais': ais}
@@ -154,10 +154,10 @@ def detail(request, rubric_pk, pk):
 
 
 @login_required
-def profile_bb_detail(request, rubric_pk, pk):
+def profile_bb_detail(request, pk):
     bb = get_object_or_404(Bb, pk=pk)
     ais = bb.additionalimage_set.all()
-    context = {'bb':bb, 'ais': ais}
+    context = {'bb': bb, 'ais': ais}
     return render(request, 'main/detail_for_user.html', context)
 
 

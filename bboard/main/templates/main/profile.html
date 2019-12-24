@@ -12,9 +12,16 @@
 
 <p><a href="{% url 'main:profile_bb_add' %}">Добавить объявление</a></p>
 
-<p class="text-right mt-2">
-	<a href="{% url 'main:profile_bb_change' pk=bb.pk %}">Исправить</a>
-	<a href="{% url 'main:profile_bb_delete' pk=bb.pk %}">Удалить</a>
-</p>
+{% for bb in bbs%}
+<div class="media-body">
+	<p><a href="{% url 'main:profile_bb_detail' pk=bb.pk %}">Рубрика: {{ bb.rubric }}</a></p>
+	<p>{{ bb.title }}</p>
+	<p class="text-right mt-2">
+		<p>{{ bb.price }}</p>
+		<a href="{% url 'main:profile_bb_change' pk=bb.pk %}">Исправить</a>
+		<a href="{% url 'main:profile_bb_delete' pk=bb.pk %}">Удалить</a>
+	</p>
+</div>
+{% endfor %}
 {% endblock %}
 
