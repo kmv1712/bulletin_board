@@ -3,15 +3,8 @@ from django.contrib.auth.models import AbstractUser
 from django.dispatch import Signal
 from django.db.models.signals import post_save
 
-from .utilities import send_activation_notification
-from .utilities import get_timestamp_path
+from .utilities import send_activation_notification, send_new_comment_notification, get_timestamp_path
 
-user_registrated = Signal(providing_args=['instance'])
-
-def user_registrated_dispatcher(sender, **kwargs):
-    send_activation_notification(kwargs['instance'])
-
-user_registrated.connect(user_registrated_dispatcher)
 
 class AdvUser(AbstractUser):
     is_activated = models.BooleanField(default=True, db_index=True, verbose_name='Прошел активацию?')
@@ -25,14 +18,17 @@ class AdvUser(AbstractUser):
     class Meta(AbstractUser.Meta):
         pass
 
+
 class Rubric(models.Model):
     name = models.CharField(max_length=20, db_index=True, unique=True, verbose_name='Название')
     order = models.SmallIntegerField(default=0, db_index=True, verbose_name='Порядок')
     super_rubric = models.ForeignKey('SuperRubric', on_delete=models.PROTECT, null=True, blank=True, verbose_name='Надрубрика')
 
+
 class SuperRubricManager(models.Manager):
     def get_queryset(self):
         return super().get_queryset().filter(super_rubric__isnull=True)
+
 
 class SuperRubric(Rubric):
     objects = SuperRubricManager()
@@ -46,9 +42,11 @@ class SuperRubric(Rubric):
         verbose_name = 'Надрубрика'
         verbose_name_plural = 'Надрубрика'
 
+
 class SubRubricManager(models.Manager):
     def get_queryset(self):
         return super().get_queryset().filter(super_rubric__isnull=False)
+
 
 class SubRubric(Rubric):
     objects = SubRubricManager()
@@ -84,6 +82,7 @@ class Bb(models.Model):
         verbose_name = 'Объявление'
         ordering = ['-created_at']
 
+
 class AdditionalImage(models.Model):
     bb = models.ForeignKey(Bb, on_delete=models.CASCADE, verbose_name='Объявление')
     image = models.ImageField(upload_to=get_timestamp_path, verbose_name='Изображение')
@@ -91,6 +90,7 @@ class AdditionalImage(models.Model):
     class Meta:
         verbose_name_plural = 'Дополнительные илюстрации'
         verbose_name = 'Дополнительная иллюстрация'
+
 
 class Comment(models.Model):
     bb = models.ForeignKey(Bb, on_delete=models.CASCADE, verbose_name='Объявление')
@@ -105,9 +105,20 @@ class Comment(models.Model):
         ordering = ['created_at']
 
 
+user_registrated = Signal(providing_args=['instance'])
+
+
+def user_registrated_dispatcher(sender, **kwargs):
+    send_activation_notification(kwargs['instance'])
+
+
+user_registrated.connect(user_registrated_dispatcher)
+
+
 def post_save_dispatcher(sender, **kwargs):
     author = kwargs['instance'].bb.author
     if kwargs['created'] and author.send_messages:
         send_new_comment_notification(kwargs['instance'])
+
 
 post_save.connect(post_save_dispatcher, sender=Comment)
