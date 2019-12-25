@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.dispatch import Signal
+from django.db.models.signals import post_save
 
 from .utilities import send_activation_notification
 from .utilities import get_timestamp_path
@@ -102,3 +103,11 @@ class Comment(models.Model):
         verbose_name_plural = 'Комментарии'
         verbose_name = 'Комментарий'
         ordering = ['created_at']
+
+
+def post_save_dispatcher(sender, **kwargs):
+    author = kwargs['instance'].bb.author
+    if kwargs['created'] and author.send_messages:
+        send_new_comment_notification(kwargs['instance'])
+
+post_save.connect(post_save_dispatcher, sender=Comment)
