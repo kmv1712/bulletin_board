@@ -2,8 +2,9 @@ from django import forms
 from django.contrib.auth import password_validation
 from django.core.exceptions import ValidationError
 from django.forms import inlineformset_factory
+from captcha.fields import CaptchaField
 
-from .models import AdvUser, user_registrated, SuperRubric, SubRubric, Bb, AdditionalImage
+from .models import AdvUser, user_registrated, SuperRubric, SubRubric, Bb, AdditionalImage, Comment
 
 
 class SearchForm(forms.Form):
@@ -68,3 +69,19 @@ class BbForm(forms.ModelForm):
 
 
 AIFormSet = inlineformset_factory(Bb, AdditionalImage, fields='__all__')
+
+class UserCommentForm(forms.ModelForm):
+    """Форма для ввода комментария зарегистрированным пользователем"""
+    class Meta:
+        model = Comment
+        exclude = ('is_active',)
+        widgets = {'bb': forms.HiddenInput}
+
+class GuestCommentForm(forms.ModelForm):
+    """Форма для ввода коментария для не зарегистрированного пользователя"""
+    captcha = CaptchaField(label='Введите текст с картинки', error_messages={'invalid': 'Неправильный текст'})
+    class Meta:
+        model = Comment 
+        exclude = ('is_active', )
+        widgets = {'bb': forms.HiddenInput}
+
