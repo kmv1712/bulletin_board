@@ -170,8 +170,9 @@ def detail(request, rubric_pk, pk):
 def profile_bb_detail(request, pk):
     bb = get_object_or_404(Bb, pk=pk)
     ais = bb.additionalimage_set.all()
-    context = {'bb': bb, 'ais': ais}
-    return render(request, 'main/detail_for_user.html', context)
+    comments = Comment.objects.filter(bb=pk, is_active=True)
+    context = {'bb': bb, 'ais': ais, 'comments': comments}
+    return render(request, 'main/profile_bb_detail.html', context)
 
 
 @login_required

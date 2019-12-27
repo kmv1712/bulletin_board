@@ -1,40 +1,53 @@
 from django.contrib import admin
 import datetime
 
-from .models import AdvUser, SuperRubric, SubRubric, Bb, AdditionalImage
+from .models import AdvUser, SuperRubric, SubRubric, Bb
+from .models import AdditionalImage, Comment
 from .utilities import send_activation_notification
 from .forms import SubRubricForm
 
+
 class AdditionalImageInline(admin.TabularInline):
     model = AdditionalImage
+
 
 class BbAdmin(admin.ModelAdmin):
     list_display = ('rubric', 'title', 'content', 'author', 'created_at')
     fields = (('rubric', 'author'), 'title', 'content', 'price', 'contacts', 'image', 'is_active')
     inlines = (AdditionalImageInline, )
 
+
 admin.site.register(Bb, BbAdmin)
+
 
 class SubRubricAdmin(admin.ModelAdmin):
     form = SubRubricForm
 
+
 admin.site.register(SubRubric, SubRubricAdmin)
+
 
 class SubRubricInline(admin.TabularInline):
     model = SubRubric
+
 
 class SuperRubricAdmin(admin.ModelAdmin):
     exclude = ('super_rubric',)
     inlines = (SubRubricInline,)
 
+
 admin.site.register(SuperRubric, SuperRubricAdmin)
+
 
 def send_activation_notifications(modeladmin, request, queryset):
     for rec in queryset:
         if not rec.is_activated:
             send_activation_notification(rec)
     modeladmin.message_user(request, 'Письма с оповещениями отправлены')
+
+
 send_activation_notifications.short_description = 'Отправка писем с оповещениями об активации'
+
 
 class NonactivatedFilter(admin.SimpleListFilter):
     title = 'Прошли активацию?'
@@ -58,6 +71,7 @@ class NonactivatedFilter(admin.SimpleListFilter):
             d = datetime.date.today() - datetime.timedelta(week=1)
             return queryset.filter(is_active=False, is_activated=False, date_joined__data__lt=d)
 
+
 class AdvUserAdmin(admin.ModelAdmin):
     list_display = ('__str__', 'is_activated', 'date_joined')
     search_fields = ('username', 'email', 'first_name', 'last_name')
@@ -73,3 +87,14 @@ class AdvUserAdmin(admin.ModelAdmin):
 
 admin.site.register(AdvUser, AdvUserAdmin)
 
+
+class CommentAdmin(admin.ModelAdmin):
+    list_display = ('author', 'content', 'created_at', 'is_active')
+    list_display_links = ('author', 'content')
+    list_filter = ('is_active',)
+    search_fields = ('author', 'content',)
+    date_hierarchy = 'created_at'
+    fields = ('author', 'content', 'is_active', 'created_at')
+    readonly_fields = ('created_at',)
+
+admin.site.register(Comment, CommentAdmin)
