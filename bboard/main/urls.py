@@ -1,29 +1,16 @@
+from django.conf import settings
+from django.conf.urls.static import static
 from django.urls import path
 
-from .views import index
-from .views import other_page
-from .views import BBLoginView
-from .views import BBLogoutView
-from .views import profile
-from .views import ChangeUserInfoView
-from .views import BBPasswordChangeView
-from .views import RegisterUserView, RegisterDoneView
-from .views import user_activate
-from .views import DeleteUserView
-from .views import by_rubric
-from .views import detail
-from .views import profile_bb_detail
-from .views import profile_bb_add
-from .views import profile_bb_change
-from .views import profile_bb_delete
-
-from django.conf.urls.static import static
-from django.conf import settings
+from .views import BBLoginView, BBLogoutView, BBPasswordChangeView, BBPasswordResetDoneView, BBPasswordResetView
+from .views import BBPasswordResetConfirmView, ChangeUserInfoView, DeleteUserView, RegisterUserView, RegisterDoneView
+from .views import by_rubric, detail, index, other_page, profile, user_activate
+from .views import profile_bb_detail, profile_bb_add, profile_bb_change, profile_bb_delete
 
 app_name = 'main'
 urlpatterns = [
         path('accounts/password/change/', BBPasswordChangeView.as_view(), name='password_change'),
-        path('accounts/logout/', BBLogoutView.as_view(), name='logout'),
+
         path('accounts/register/activate/<str:sign>/', user_activate, name='register_activate'),
         path('accounts/register/done/', RegisterDoneView.as_view(), name='register_done'),
         path('accounts/register/', RegisterUserView.as_view(), name='register'),
@@ -35,6 +22,15 @@ urlpatterns = [
         path('accounts/profile/add/', profile_bb_add, name='profile_bb_add'),
         path('accounts/profile/<int:pk>/', profile_bb_detail, name='profile_bb_detail'),
         path('accounts/profile/', profile, name='profile'),
+        path('accounts/password/reset/done/', BBPasswordResetDoneView.as_view(),
+             name='password_reset_done'),
+        path('accounts/password/reset/', BBPasswordResetView.as_view(), name='password_reset'),
+        path('accounts/password/confirm/complete/', BBPasswordResetCompleteView.as_view(),
+             name='password_reset_complete'),
+        path('accounts/password/confirm/<uidb64>/<token>/', BBPasswordResetConfirmView.as_view(),
+             name='password_reset_confirm'),
+        path('accounts/password/change/', BBPasswordChangeView.as_view(), name='password_change'),
+        path('accounts/logout/', BBLogoutView.as_view(), name='logout'),
         path('<int:rubric_pk>/<int:pk>/', detail, name='detail'),
         path('<int:pk>/', by_rubric, name='by_rubric'),
         path('<str:page>/', other_page, name='other'),
@@ -42,4 +38,4 @@ urlpatterns = [
 ]
 
 if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+        urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
