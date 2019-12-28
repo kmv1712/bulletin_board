@@ -3,6 +3,8 @@ from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView, LogoutView, PasswordChangeView
+from django.contrib.auth.views import PasswordResetView, PasswordResetDoneView
+from django.contrib.auth.views import PasswordResetConfirmView, PasswordResetCompleteView
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.paginator import Paginator
 from django.core.signing import BadSignature
@@ -243,13 +245,30 @@ def profile_bb_delete(request, pk):
         return render(request, 'main:profile_bb_delete.html', context)
 
 
-def BBPasswordResetConfirmView():
-    pass
+class BBPasswordResetView(PasswordResetView):
+    """Контроллер сброса пароля пользователя"""
+    template_name = 'main/password_reset.html'
+    subject_template_name = 'email/reset_letter_subject.txt'
+    email_template_name = 'email/reset_letter_body.txt'
+    success_url = reverse_lazy('main:password_reset_done')
 
 
-def BBPasswordResetDoneView():
-    pass
+class BBPasswordResetDoneView(PasswordResetDoneView):
+    """Контроллер перенапрвляет на страницу с информацией о выполнение сброса пароля"""
+    template_name = 'main/password_reset_done.html'
 
 
-def BBPasswordResetView():
-    pass
+class BBPasswordResetConfirmView(PasswordResetConfirmView):
+    """Контроллер перенаправляет на форму введения нового пароля"""
+    template_name = 'main/password_confirm.html'
+    success_url = reverse_lazy('main:password_reset_complete')
+
+
+class BBPasswordResetCompleteView(PasswordResetCompleteView):
+    """Контроллер перенаправляет на страницу информирующую о сбросе пароля и установки нового и предлагает
+    авторизоваться"""
+    template_name = 'main/password_complete.html'
+
+
+
+
