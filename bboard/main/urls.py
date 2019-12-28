@@ -4,7 +4,7 @@ from django.urls import path
 
 from .views import BBLoginView, BBLogoutView, BBPasswordChangeView, BBPasswordResetDoneView, BBPasswordResetView
 from .views import BBPasswordResetConfirmView, ChangeUserInfoView, DeleteUserView, RegisterUserView, RegisterDoneView
-from .views import by_rubric, detail, index, other_page, profile, user_activate
+from .views import by_rubric, detail, index, other_page, profile, user_activate, BBPasswordResetCompleteView
 from .views import profile_bb_detail, profile_bb_add, profile_bb_change, profile_bb_delete
 
 app_name = 'main'
