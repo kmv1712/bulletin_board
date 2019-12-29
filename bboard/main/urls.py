@@ -10,7 +10,6 @@ from .views import profile_bb_detail, profile_bb_add, profile_bb_change, profile
 app_name = 'main'
 urlpatterns = [
         path('accounts/password/change/', BBPasswordChangeView.as_view(), name='password_change'),
-
         path('accounts/register/activate/<str:sign>/', user_activate, name='register_activate'),
         path('accounts/register/done/', RegisterDoneView.as_view(), name='register_done'),
         path('accounts/register/', RegisterUserView.as_view(), name='register'),
@@ -22,8 +21,7 @@ urlpatterns = [
         path('accounts/profile/add/', profile_bb_add, name='profile_bb_add'),
         path('accounts/profile/<int:pk>/', profile_bb_detail, name='profile_bb_detail'),
         path('accounts/profile/', profile, name='profile'),
-        path('accounts/password/reset/done/', BBPasswordResetDoneView.as_view(),
-             name='password_reset_done'),
+        path('accounts/password/reset/done/', BBPasswordResetDoneView.as_view(), name='password_reset_done'),
         path('accounts/password/reset/', BBPasswordResetView.as_view(), name='password_reset'),
         path('accounts/password/confirm/complete/', BBPasswordResetCompleteView.as_view(),
              name='password_reset_complete'),

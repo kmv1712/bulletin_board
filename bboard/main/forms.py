@@ -27,6 +27,7 @@ class ChangeUserInfoForm(forms.ModelForm):
         model = AdvUser
         fields = ('username', 'email', 'first_name', 'last_name', 'send_messages')
 
+
 class RegisterUserForm(forms.ModelForm):
     email = forms.EmailField(required=True, label='Адрес электронной почты')
     password1=forms.CharField(label='Пароль', widget=forms.PasswordInput, help_text=password_validation.password_validators_help_text_html())
@@ -70,6 +71,7 @@ class BbForm(forms.ModelForm):
 
 AIFormSet = inlineformset_factory(Bb, AdditionalImage, fields='__all__')
 
+
 class UserCommentForm(forms.ModelForm):
     """Форма для ввода комментария зарегистрированным пользователем"""
     class Meta:
@@ -77,11 +79,12 @@ class UserCommentForm(forms.ModelForm):
         exclude = ('is_active',)
         widgets = {'bb': forms.HiddenInput}
 
+
 class GuestCommentForm(forms.ModelForm):
     """Форма для ввода коментария для не зарегистрированного пользователя"""
     captcha = CaptchaField(label='Введите текст с картинки', error_messages={'invalid': 'Неправильный текст'})
     class Meta:
-        model = Comment 
+        model = Comment
         exclude = ('is_active', )
         widgets = {'bb': forms.HiddenInput}
 
