@@ -25,7 +25,7 @@ SECRET_KEY = 'zyhrggju9zy95p2*4!%h$o04&r12e^swg#q8*2u1_(s*cu!)=t'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['vm341071.eurodir.ru', '95.142.39.175', '127.0.0.1']
 
 
 # Application definition
