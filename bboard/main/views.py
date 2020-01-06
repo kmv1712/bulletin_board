@@ -87,7 +87,7 @@ class RegisterUserView(CreateView):
 
 
 class RegisterDoneView(TemplateView):
-    template_name = 'maim/register_done.html'
+    template_name = 'main/register_done.html'
 
 
 class BBPasswordChangeView(SuccessMessageMixin, LoginRequiredMixin, PasswordChangeView):
